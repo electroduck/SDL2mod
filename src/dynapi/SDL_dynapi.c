@@ -271,8 +271,8 @@ static void dynapi_warn(const char *msg)
     #if defined(WIN32) || defined(_WIN32) || defined(__CYGWIN__)
     MessageBoxA(NULL, msg, caption, MB_OK | MB_ICONERROR);
     #else
-    fprintf(stderr, "\n\n%s\n%s\n\n", caption, msg);
-    fflush(stderr);
+    /*fprintf(stderr, "\n\n%s\n%s\n\n", caption, msg);
+    fflush(stderr);*/
     #endif
 }
 

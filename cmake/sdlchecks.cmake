@@ -928,16 +928,24 @@ macro(CheckPTHREAD)
     endif()
 
     # Run some tests
+	message(STATUS "Checking PThreads")
     set(ORIG_CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
     set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} ${PTHREAD_CFLAGS} ${PTHREAD_LDFLAGS}")
-    check_c_source_compiles("
-      #include <pthread.h>
-      int main(int argc, char** argv) {
-        pthread_attr_t type;
-        pthread_attr_init(&type);
-        return 0;
-      }" HAVE_PTHREADS)
+	
+	if (ANDROID)
+      set (HAVE_PTHREADS 1)
+	else ()
+      check_c_source_compiles("
+        #include <pthread.h>
+        int main(int argc, char** argv) {
+          pthread_attr_t type;
+          pthread_attr_init(&type);
+          return 0;
+        }" HAVE_PTHREADS)
+	endif ()
+	
     if(HAVE_PTHREADS)
+	  message(STATUS "Has PThreads")
       set(SDL_THREAD_PTHREAD 1)
       list(APPEND EXTRA_CFLAGS ${PTHREAD_CFLAGS})
       list(APPEND EXTRA_LDFLAGS ${PTHREAD_LDFLAGS})
@@ -969,18 +977,23 @@ macro(CheckPTHREAD)
       endif()
 
       if(PTHREADS_SEM)
-        check_c_source_compiles("#include <pthread.h>
-                                 #include <semaphore.h>
-                                 int main(int argc, char **argv) { return 0; }" HAVE_PTHREADS_SEM)
-        if(HAVE_PTHREADS_SEM)
-          check_c_source_compiles("
-              #include <pthread.h>
-              #include <semaphore.h>
-              int main(int argc, char **argv) {
-                  sem_timedwait(NULL, NULL);
-                  return 0;
-              }" HAVE_SEM_TIMEDWAIT)
-        endif()
+	    if (ANDROID)
+		  set (HAVE_PTHREADS_SEM 1)
+		  set (HAVE_SEM_TIMEDWAIT 1)
+		else ()
+          check_c_source_compiles("#include <pthread.h>
+                                   #include <semaphore.h>
+                                   int main(int argc, char **argv) { return 0; }" HAVE_PTHREADS_SEM)
+          if(HAVE_PTHREADS_SEM)
+            check_c_source_compiles("
+                #include <pthread.h>
+                #include <semaphore.h>
+                int main(int argc, char **argv) {
+                    sem_timedwait(NULL, NULL);
+                    return 0;
+                }" HAVE_SEM_TIMEDWAIT)
+          endif()
+		endif()
       endif()
 
       check_include_files("pthread.h" HAVE_PTHREAD_H)

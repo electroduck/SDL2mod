@@ -20,7 +20,8 @@ android {
         externalNativeBuild {
             ndkBuild {
                 arguments "APP_PLATFORM=android-16"
-                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+                arguments "APP_ALLOW_MISSING_DEPS=true"
+                abiFilters 'armeabi', 'armeabi-v7a', 'mips', 'x86'
             }
             // cmake {
             //     arguments "-DANDROID_APP_PLATFORM=android-16", "-DANDROID_STL=c++_static"
